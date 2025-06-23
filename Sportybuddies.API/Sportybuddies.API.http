@@ -1,0 +1,6 @@
+@Sportybuddies.API_HostAddress = http://localhost:5293
+
+GET {{Sportybuddies.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
