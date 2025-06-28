@@ -1,6 +1,7 @@
 ﻿namespace Sportybuddies.API.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<IdentityUser>(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Sport> Sports { get; set; }
@@ -13,12 +14,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-        
-        modelBuilder.Entity<IdentityUser>()
-            .HasOne<Profile>()
-            .WithOne(p => p.User)
-            .HasForeignKey<Profile>(p => p.UserId);
-        
+
         base.OnModelCreating(modelBuilder);
     }
 }

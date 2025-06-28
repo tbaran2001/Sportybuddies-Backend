@@ -5,14 +5,14 @@ public class Buddy : Entity
     public Guid OppositeBuddyId { get; private set; }
     public Guid ProfileId { get; private set; }
     public Guid MatchedProfileId { get; private set; }
-    public DateTime CreatedOn { get; private set; }
+    public DateTimeOffset CreatedOn { get; private set; }
     public Guid? ConversationId { get; private set; }
 
     public Profile Profile { get; private set; }
     public Profile MatchedProfile { private set; get; }
     public Conversation Conversation { get; private set; }
 
-    public static (Buddy, Buddy) CreatePair(Guid profileId, Guid matchedProfileId, DateTime createdOn)
+    public static (Buddy, Buddy) CreatePair(Guid profileId, Guid matchedProfileId, DateTimeOffset createdOn)
     {
         var buddy1 = new Buddy
         {

@@ -2,13 +2,13 @@
 
 public class TestTokenRequest
 {
-    public string UserId { get; set; } = Guid.NewGuid().ToString();
+    public Guid UserId { get; set; } = Guid.NewGuid();
     public string Email { get; set; } = "test.user@example.com";
     public string UserName { get; set; } = "test.user@example.com";
     public List<string> Roles { get; set; } = new();
 }
 
-public record UserCreatedEvent(string UserId, string Email) : INotification;
+public record UserCreatedEvent(Guid UserId, string Email) : INotification;
 
 public class AuthModule : ICarterModule
 {
@@ -17,7 +17,7 @@ public class AuthModule : ICarterModule
         var group = app.MapGroup("/api/auth");
 
         group.MapGet("/google-login",
-            (SignInManager<IdentityUser> signInManager, IHttpContextAccessor httpContextAccessor) =>
+            (SignInManager<ApplicationUser> signInManager, IHttpContextAccessor httpContextAccessor) =>
             {
                 var httpContext = httpContextAccessor.HttpContext;
                 var redirectUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/api/auth/google-response";
@@ -26,8 +26,8 @@ public class AuthModule : ICarterModule
             });
 
         group.MapGet("/google-response", async (
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             IConfiguration config,
             IMediator mediator) =>
         {
@@ -57,7 +57,7 @@ public class AuthModule : ICarterModule
             var userToCreate = await userManager.FindByEmailAsync(email);
             if (userToCreate == null)
             {
-                userToCreate = new IdentityUser { UserName = email, Email = email };
+                userToCreate = new ApplicationUser { UserName = email, Email = email };
                 var createUserResult = await userManager.CreateAsync(userToCreate);
 
                 if (!createUserResult.Succeeded)
@@ -80,8 +80,8 @@ public class AuthModule : ICarterModule
             TestTokenRequest request,
             IConfiguration config,
             IWebHostEnvironment env,
-            UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole<Guid>> roleManager,
             IMediator mediator) =>
         {
             if (!env.IsDevelopment())
@@ -92,7 +92,7 @@ public class AuthModule : ICarterModule
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                user = new IdentityUser
+                user = new ApplicationUser
                 {
                     Id = request.UserId,
                     Email = request.Email,
@@ -118,7 +118,7 @@ public class AuthModule : ICarterModule
                 {
                     if (!await roleManager.RoleExistsAsync(roleName))
                     {
-                        await roleManager.CreateAsync(new IdentityRole(roleName));
+                        await roleManager.CreateAsync(new IdentityRole<Guid>(roleName));
                     }
                 }
 
@@ -138,7 +138,7 @@ public class AuthModule : ICarterModule
         }).WithTags("Testing");
     }
 
-    private static string GenerateJwtToken(IdentityUser user, List<string> roles, IConfiguration config)
+    private static string GenerateJwtToken(ApplicationUser user, List<string> roles, IConfiguration config)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -148,7 +148,7 @@ public class AuthModule : ICarterModule
             new(JwtRegisteredClaimNames.Sub, user.UserName),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.NameIdentifier, user.Id)
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         foreach (var role in roles)

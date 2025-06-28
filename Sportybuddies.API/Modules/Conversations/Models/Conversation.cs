@@ -3,7 +3,7 @@ namespace Sportybuddies.API.Modules.Conversations.Models;
 public class Conversation : Entity
 {
     public Guid CreatorId { get; private set; }
-    public DateTime CreatedOnUtc { get; private set; }
+    public DateTimeOffset CreatedOnUtc { get; private set; }
     public ICollection<Participant> Participants { get; private set; }
     public ICollection<Message> Messages { get; private set; } = new List<Message>();
 
@@ -19,7 +19,7 @@ public class Conversation : Entity
         {
             Id = id,
             CreatorId = creatorId,
-            CreatedOnUtc = DateTime.UtcNow,
+            CreatedOnUtc = DateTimeOffset.UtcNow,
             Participants = new List<Participant>
             {
                 Participant.Create(id, creatorId),

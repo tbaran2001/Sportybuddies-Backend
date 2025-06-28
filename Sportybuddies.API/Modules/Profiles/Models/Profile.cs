@@ -5,16 +5,16 @@ public class Profile : Entity
     public string Name { get; private set; }
     public string Description { get; private set; }
     public string MainPhotoUrl { get; private set; }
-    public DateTime CreatedOn { get; private set; }
-    public DateOnly DateOfBirth { get; private set; }
+    public DateTimeOffset CreatedOn { get; private set; }
+    public DateTimeOffset DateOfBirth { get; private set; }
     public Gender Gender { get; private set; }
     public Preferences Preferences { get; private set; }
     public Location Location { get; private set; }
     public ICollection<Sport> Sports { get; private set; } = new List<Sport>();
-    public string UserId { get; set; }
-    public virtual IdentityUser User { get; set; }
+    public Guid UserId { get; set; }
+    public virtual ApplicationUser User { get; set; }
 
-    public static Profile Create(Guid id, string name, DateOnly dateOfBirth, Gender gender, string userId)
+    public static Profile Create(Guid id, string name, DateTimeOffset dateOfBirth, Gender gender, Guid userId)
     {
         var profile = new Profile
         {
@@ -23,7 +23,7 @@ public class Profile : Entity
             DateOfBirth = dateOfBirth,
             Gender = gender,
             UserId = userId,
-            CreatedOn = DateTime.Now,
+            CreatedOn = DateTimeOffset.UtcNow,
             Preferences = Preferences.Default,
             Location = null,
             Description = null,
@@ -43,7 +43,7 @@ public class Profile : Entity
         return profile;
     }
 
-    public void Update(string name, string description, DateOnly dateOfBirth, Gender gender)
+    public void Update(string name, string description, DateTimeOffset dateOfBirth, Gender gender)
     {
         Name = name;
         Description = description;

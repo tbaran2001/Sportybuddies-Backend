@@ -10,7 +10,7 @@ public class CreateUserProfileHandler(ApplicationDbContext dbContext) : INotific
             throw new ProfileAlreadyExistsException(notification.UserId);
         }
 
-        var newProfile = Profile.Create(Guid.NewGuid(), notification.Email, DateOnly.MaxValue, Gender.Female,
+        var newProfile = Profile.Create(Guid.NewGuid(), notification.Email, DateTimeOffset.UtcNow, Gender.Female,
             notification.UserId);
 
         dbContext.Profiles.Add(newProfile);
