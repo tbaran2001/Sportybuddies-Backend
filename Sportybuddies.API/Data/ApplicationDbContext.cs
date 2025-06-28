@@ -1,6 +1,9 @@
-﻿namespace Sportybuddies.API.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+namespace Sportybuddies.API.Data;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<IdentityUser>(options)
 {
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Sport> Sports { get; set; }

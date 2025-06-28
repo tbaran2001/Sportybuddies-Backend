@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Sports.Features;
+﻿using Microsoft.Identity.Web;
+
+namespace Sportybuddies.API.Modules.Sports.Features;
 
 public record GetSportsQuery : IQuery<GetSportsResult>;
 
@@ -20,6 +22,7 @@ public class GetSportsEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .RequireAuthorization()
             .WithTags("Sports")
             .WithName("GetSports")
             .Produces<GetSportsResponseDto>()
