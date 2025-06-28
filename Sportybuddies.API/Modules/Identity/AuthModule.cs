@@ -1,10 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Sportybuddies.API.Modules.Identity;
+﻿namespace Sportybuddies.API.Modules.Identity;
 
 public class TestTokenRequest
 {
@@ -13,6 +7,8 @@ public class TestTokenRequest
     public string UserName { get; set; } = "test.user@example.com";
     public List<string> Roles { get; set; } = new();
 }
+
+public record UserCreatedEvent(string UserId, string Email) : INotification;
 
 public class AuthModule : ICarterModule
 {
@@ -32,7 +28,8 @@ public class AuthModule : ICarterModule
         group.MapGet("/google-response", async (
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            IConfiguration config) =>
+            IConfiguration config,
+            IMediator mediator) =>
         {
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -61,7 +58,16 @@ public class AuthModule : ICarterModule
             if (userToCreate == null)
             {
                 userToCreate = new IdentityUser { UserName = email, Email = email };
-                await userManager.CreateAsync(userToCreate);
+                var createUserResult = await userManager.CreateAsync(userToCreate);
+
+                if (!createUserResult.Succeeded)
+                {
+                    return Results.ValidationProblem(
+                        createUserResult.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
+                }
+
+                var userCreatedEvent = new UserCreatedEvent(userToCreate.Id, userToCreate.Email);
+                await mediator.Publish(userCreatedEvent);
             }
 
             await userManager.AddLoginAsync(userToCreate, info);
@@ -75,7 +81,8 @@ public class AuthModule : ICarterModule
             IConfiguration config,
             IWebHostEnvironment env,
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager) =>
+            RoleManager<IdentityRole> roleManager,
+            IMediator mediator) =>
         {
             if (!env.IsDevelopment())
             {
@@ -100,6 +107,9 @@ public class AuthModule : ICarterModule
                     return Results.ValidationProblem(
                         createUserResult.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
                 }
+
+                var userCreatedEvent = new UserCreatedEvent(user.Id, user.Email);
+                await mediator.Publish(userCreatedEvent);
             }
 
             if (request.Roles.Any())

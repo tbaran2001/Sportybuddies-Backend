@@ -39,8 +39,6 @@
       <Folder Include="Modules\Matches\Features\" />
       <Folder Include="Modules\Matches\ValueObjects\" />
       <Folder Include="Modules\Profiles\Dtos\" />
-      <Folder Include="Modules\Profiles\Exceptions\" />
-      <Folder Include="Modules\Profiles\Features\" />
     </ItemGroup>
 
 </Project>

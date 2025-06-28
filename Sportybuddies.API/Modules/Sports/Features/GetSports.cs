@@ -1,6 +1,4 @@
-﻿using Microsoft.Identity.Web;
-
-namespace Sportybuddies.API.Modules.Sports.Features;
+﻿namespace Sportybuddies.API.Modules.Sports.Features;
 
 public record GetSportsQuery : IQuery<GetSportsResult>;
 

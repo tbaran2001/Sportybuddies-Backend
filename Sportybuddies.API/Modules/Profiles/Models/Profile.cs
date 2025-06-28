@@ -11,8 +11,10 @@ public class Profile : Entity
     public Preferences Preferences { get; private set; }
     public Location Location { get; private set; }
     public ICollection<Sport> Sports { get; private set; } = new List<Sport>();
+    public string UserId { get; set; }
+    public virtual IdentityUser User { get; set; }
 
-    public static Profile Create(Guid id, string name, DateOnly dateOfBirth, Gender gender)
+    public static Profile Create(Guid id, string name, DateOnly dateOfBirth, Gender gender, string userId)
     {
         var profile = new Profile
         {
@@ -20,6 +22,7 @@ public class Profile : Entity
             Name = name,
             DateOfBirth = dateOfBirth,
             Gender = gender,
+            UserId = userId,
             CreatedOn = DateTime.Now,
             Preferences = Preferences.Default,
             Location = null,

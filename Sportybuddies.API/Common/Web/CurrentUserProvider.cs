@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace Sportybuddies.API.Common.Web;
+﻿namespace Sportybuddies.API.Common.Web;
 
 public interface ICurrentUserProvider
 {

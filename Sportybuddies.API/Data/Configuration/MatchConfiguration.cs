@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace Sportybuddies.API.Data.Configuration;
 
 public class MatchConfiguration : IEntityTypeConfiguration<Match>

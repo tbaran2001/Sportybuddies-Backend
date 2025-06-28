@@ -1,10 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Sportybuddies.API.Common.Exceptions.Handler;
-using Sportybuddies.API.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
