@@ -1,73 +1,61 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Sportybuddies.API.Common.Exceptions.Handler;
 
-public class CustomExceptionHandler(ILogger<CustomExceptionHandler>logger):IExceptionHandler
+public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception,
+        CancellationToken cancellationToken)
     {
-        logger.LogError(
-            "Error Message: {exceptionMessage}, Time of occurrence {time}",
-            exception.Message, DateTime.UtcNow);
-
-        (string Detail, string Title, int StatusCode) details = exception switch
-        {
-            InternalServerException =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError
-            ),
-            ValidationException =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest
-            ),
-            BadRequestException =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest
-            ),
-            NotFoundException =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status404NotFound
-            ),
-            ConflictException =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status409Conflict
-            ),
-            _ =>
-            (
-                exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError
-            )
-        };
-
-        var problemDetails = new ProblemDetails
-        {
-            Title = details.Title,
-            Detail = details.Detail,
-            Status = details.StatusCode,
-            Instance = context.Request.Path
-        };
-
-        problemDetails.Extensions.Add("traceId", context.TraceIdentifier);
+        logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         if (exception is ValidationException validationException)
         {
-            problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
+            await HandleValidationExceptionAsync(context, validationException, cancellationToken);
+            return true;
         }
 
-        await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
+        var (detail, title, statusCode) = exception switch
+        {
+            InternalServerException ex => (ex.Message, "Internal Server Error",
+                StatusCodes.Status500InternalServerError),
+            BadRequestException ex => (ex.Message, "Bad Request", StatusCodes.Status400BadRequest),
+            NotFoundException ex => (ex.Message, "Not Found", StatusCodes.Status404NotFound),
+            ConflictException ex => (ex.Message, "Conflict", StatusCodes.Status409Conflict),
+            _ => ("An unexpected internal server error has occurred.", "Internal Server Error",
+                StatusCodes.Status500InternalServerError)
+        };
+
+        context.Response.StatusCode = statusCode;
+
+        await context.Response.WriteAsJsonAsync(new ProblemDetails
+        {
+            Title = title,
+            Detail = detail,
+            Status = statusCode,
+            Instance = context.Request.Path,
+            Extensions = { { "traceId", context.TraceIdentifier } }
+        }, cancellationToken);
+
         return true;
+    }
+
+    private static async Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception,
+        CancellationToken cancellationToken)
+    {
+        var validationProblemDetails = new ValidationProblemDetails(
+            exception.Errors.GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray()))
+        {
+            Title = "Validation Error",
+            Detail = "One or more validation errors occurred.",
+            Status = StatusCodes.Status400BadRequest,
+            Instance = context.Request.Path,
+            Extensions = { { "traceId", context.TraceIdentifier } }
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(validationProblemDetails, cancellationToken: cancellationToken);
     }
 }

@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Sportybuddies.API.Common.CQRS;
+﻿namespace Sportybuddies.API.Common.CQRS;
 
 public interface ICommandHandler<in TCommand> : ICommandHandler<TCommand, Unit>
     where TCommand : ICommand<Unit>

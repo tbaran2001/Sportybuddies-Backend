@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using MediatR;
 
 namespace Sportybuddies.API.Common.Behaviors;
 

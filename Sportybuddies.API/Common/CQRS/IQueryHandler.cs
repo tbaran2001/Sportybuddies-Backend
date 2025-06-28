@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Sportybuddies.API.Common.CQRS;
+﻿namespace Sportybuddies.API.Common.CQRS;
 
 public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
     where TQuery : IQuery<TResponse>
