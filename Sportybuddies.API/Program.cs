@@ -17,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
 });
 builder.Services.AddScoped<ISportsRepository, SportsRepository>();
+builder.Services.AddScoped<IProfilesRepository, ProfilesRepository>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();

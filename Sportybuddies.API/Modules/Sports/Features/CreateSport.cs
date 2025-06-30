@@ -22,7 +22,6 @@ public class CreateSportEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
-            .WithTags("Sports")
             .WithName("CreateSport")
             .Produces<CreateSportResponseDto>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)

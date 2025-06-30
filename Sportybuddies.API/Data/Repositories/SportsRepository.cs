@@ -2,28 +2,23 @@
 
 public class SportsRepository(ApplicationDbContext dbContext) : ISportsRepository
 {
-    public async Task<IEnumerable<Sport>> GetAllSportsAsync()
+    public async Task AddSportAsync(Sport sport, CancellationToken cancellationToken = default)
     {
-        return await dbContext.Sports.ToListAsync();
+        await dbContext.Sports.AddAsync(sport, cancellationToken);
     }
 
-    public async Task<Sport> GetSportByIdAsync(Guid sportId)
+    public async Task<IEnumerable<Sport>> GetAllSportsAsync(CancellationToken cancellationToken = default)
     {
-        return await dbContext.Sports.FindAsync(sportId);
+        return await dbContext.Sports.ToListAsync(cancellationToken);
     }
 
-    public async Task AddSportAsync(Sport sport)
+    public async Task<Sport> GetSportByIdAsync(Guid sportId, CancellationToken cancellationToken = default)
     {
-        await dbContext.Sports.AddAsync(sport);
+        return await dbContext.Sports.FirstOrDefaultAsync(s => s.Id == sportId, cancellationToken);
     }
 
-    public void RemoveSport(Sport sport)
+    public async Task<bool> SportNameExistsAsync(string sportName, CancellationToken cancellationToken = default)
     {
-        dbContext.Sports.Remove(sport);
-    }
-
-    public async Task<bool> SportNameExistsAsync(string sportName)
-    {
-        return await dbContext.Sports.AnyAsync(s => s.Name == sportName);
+        return await dbContext.Sports.AnyAsync(s => s.Name == sportName, cancellationToken);
     }
 }

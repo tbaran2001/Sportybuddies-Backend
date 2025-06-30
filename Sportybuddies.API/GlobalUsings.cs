@@ -25,6 +25,7 @@ global using Sportybuddies.API.Modules.Conversations.Models;
 global using Sportybuddies.API.Modules.Identity;
 global using Sportybuddies.API.Modules.Matches.Enums;
 global using Sportybuddies.API.Modules.Matches.Models;
+global using Sportybuddies.API.Modules.Profiles.Dtos;
 global using Sportybuddies.API.Modules.Profiles.Enums;
 global using Sportybuddies.API.Modules.Profiles.Exceptions;
 global using Sportybuddies.API.Modules.Profiles.Models;
