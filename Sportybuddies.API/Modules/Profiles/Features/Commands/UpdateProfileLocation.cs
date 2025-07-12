@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
+﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
+
+namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
 public record UpdateProfileLocationCommand(Guid ProfileId, double Latitude, double Longitude, string Address)
     : ICommand;

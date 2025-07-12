@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
+﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
+
+namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
 public record AddProfileSportCommand(Guid ProfileId, Guid SportId) : ICommand;
 

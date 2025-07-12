@@ -10,6 +10,7 @@ builder.Services.AddMediatR(configuration =>
     configuration.AddOpenBehavior(typeof(TransactionBehavior<,>));
 });
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
+ValidatorOptions.Global.LanguageManager.Enabled = false;
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

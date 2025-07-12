@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
+﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
+
+namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
 public record RemoveProfileSportCommand(Guid ProfileId, Guid SportId) : ICommand;
 
@@ -43,7 +45,7 @@ internal class RemoveProfileSportCommandHandler(
 {
     public async Task<Unit> Handle(RemoveProfileSportCommand command, CancellationToken cancellationToken)
     {
-        var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
+        var profile = await profilesRepository.GetProfileByIdWithSportsAsync(command.ProfileId, cancellationToken);
         if (profile == null)
             throw new ProfileNotFoundException(command.ProfileId);
 

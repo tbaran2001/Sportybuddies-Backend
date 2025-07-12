@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,12 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger) : IE
             InternalServerException ex => (ex.Message, "Internal Server Error",
                 StatusCodes.Status500InternalServerError),
             BadRequestException ex => (ex.Message, "Bad Request", StatusCodes.Status400BadRequest),
+            BadHttpRequestException ex => (
+                ex.InnerException is JsonException jsonEx
+                    ? $"Invalid value provided for path: '{jsonEx.Path}'. Please check the data type and format."
+                    : "The request body contains malformed JSON.",
+                "Bad Request",
+                StatusCodes.Status400BadRequest),
             NotFoundException ex => (ex.Message, "Not Found", StatusCodes.Status404NotFound),
             ConflictException ex => (ex.Message, "Conflict", StatusCodes.Status409Conflict),
             _ => ("An unexpected internal server error has occurred.", "Internal Server Error",

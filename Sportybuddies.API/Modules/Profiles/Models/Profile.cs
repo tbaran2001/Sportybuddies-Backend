@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Models;
+﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Domain;
+
+namespace Sportybuddies.API.Modules.Profiles.Models;
 
 public class Profile : Entity
 {
@@ -53,16 +55,17 @@ public class Profile : Entity
 
     public void AddSport(Sport sport)
     {
-        if (Sports.Contains(sport))
-            throw new Exception("Profile already has this sport");
+        if (Sports.Any(s => s.Id == sport.Id))
+            throw new ProfileAlreadyHasSportException(Id, sport.Id);
 
         Sports.Add(sport);
     }
 
     public void RemoveSport(Sport sport)
     {
-        if (!Sports.Contains(sport))
-            throw new Exception("Profile does not have this sport");
+        var sportToRemove = Sports.FirstOrDefault(s => s.Id == sport.Id);
+        if (sportToRemove == null)
+            throw new ProfileDoesNotHaveSportException(Id, sport.Id);
 
         Sports.Remove(sport);
     }

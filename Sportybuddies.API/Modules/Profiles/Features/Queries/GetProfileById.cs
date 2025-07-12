@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Features.Queries;
+﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
+
+namespace Sportybuddies.API.Modules.Profiles.Features.Queries;
 
 public record GetProfileByIdQuery(Guid ProfileId) : IQuery<GetProfileByIdResult>;
 
@@ -16,7 +18,7 @@ public class GetProfileByIdEndpoint : ICarterModule
 
                 var result = await sender.Send(query);
 
-                var response = result.Profile.Adapt<GetProfileByIdResponseDto>();
+                var response = result.Adapt<GetProfileByIdResponseDto>();
 
                 return Results.Ok(response);
             })
