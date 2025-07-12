@@ -15,6 +15,14 @@ public class ProfilesRepository(ApplicationDbContext dbContext) : IProfilesRepos
             .FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken);
     }
 
+    public async Task<Profile> GetProfileByUserIdWithSportsAsync(Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Profiles
+            .Include(p => p.Sports)
+            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+    }
+
     public async Task<IEnumerable<Profile>> GetAllProfilesWthSportsAsync(CancellationToken cancellationToken = default)
     {
         return await dbContext.Profiles

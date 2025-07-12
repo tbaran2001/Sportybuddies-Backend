@@ -38,6 +38,6 @@ public class Match : Entity
     public void SetSwipe(Swipe swipe, Swipe? oppositeMatchSwipe)
     {
         Swipe = swipe;
-        SwipeDateTime = DateTime.UtcNow;
+        SwipeDateTime = DateTimeOffset.UtcNow;
     }
 }

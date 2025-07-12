@@ -10,7 +10,7 @@ public class CreateMatchesCommandHandler(IMatchesRepository matchesRepository)
         if (await matchesRepository.CheckIfMatchExistsAsync(command.ProfileId, command.MatchedProfileId))
             return Unit.Value;
 
-        var (match1, match2) = Match.CreatePair(command.ProfileId, command.MatchedProfileId, DateTime.Now);
+        var (match1, match2) = Match.CreatePair(command.ProfileId, command.MatchedProfileId, DateTimeOffset.UtcNow);
 
         var matches = new List<Match> { match1, match2 };
 

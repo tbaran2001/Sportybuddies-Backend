@@ -1,3 +1,5 @@
+using Sportybuddies.API.Common.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
@@ -30,6 +32,7 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 
 builder.Services.AddAuthentication(options =>
     {
