@@ -7,6 +7,7 @@ builder.Services.AddMediatR(configuration =>
     configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
     configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    configuration.AddOpenBehavior(typeof(DomainEventsBehavior<,>));
     configuration.AddOpenBehavior(typeof(TransactionBehavior<,>));
 });
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
@@ -19,6 +20,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 builder.Services.AddScoped<ISportsRepository, SportsRepository>();
 builder.Services.AddScoped<IProfilesRepository, ProfilesRepository>();
+builder.Services.AddScoped<IMatchesRepository, MatchesRepository>();
+builder.Services.AddScoped<IBuddiesRepository, BuddiesRepository>();
+builder.Services.AddScoped<IConversationsRepository, ConversationsRepository>();
+
+builder.Services.AddScoped<IBuddyService, BuddyService>();
+builder.Services.AddScoped<IMatchService, MatchService>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();

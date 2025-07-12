@@ -1,6 +1,4 @@
-﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
-
-namespace Sportybuddies.API.Modules.Profiles.Features.Queries;
+﻿namespace Sportybuddies.API.Modules.Profiles.Features.Queries;
 
 public record GetProfileByIdQuery(Guid ProfileId) : IQuery<GetProfileByIdResult>;
 

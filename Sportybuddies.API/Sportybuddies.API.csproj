@@ -25,20 +25,8 @@
 
     <ItemGroup>
       <Folder Include="Data\Migrations\" />
-      <Folder Include="Modules\Buddies\Dtos\" />
-      <Folder Include="Modules\Buddies\Enums\" />
       <Folder Include="Modules\Buddies\Exceptions\" />
-      <Folder Include="Modules\Buddies\Features\" />
-      <Folder Include="Modules\Buddies\ValueObjects\" />
-      <Folder Include="Modules\Conversations\Dtos\" />
       <Folder Include="Modules\Conversations\Enums\" />
-      <Folder Include="Modules\Conversations\Exceptions\" />
-      <Folder Include="Modules\Conversations\Features\" />
-      <Folder Include="Modules\Conversations\ValueObjects\" />
-      <Folder Include="Modules\Matches\Dtos\" />
-      <Folder Include="Modules\Matches\Exceptions\" />
-      <Folder Include="Modules\Matches\Features\" />
-      <Folder Include="Modules\Matches\ValueObjects\" />
     </ItemGroup>
 
 </Project>

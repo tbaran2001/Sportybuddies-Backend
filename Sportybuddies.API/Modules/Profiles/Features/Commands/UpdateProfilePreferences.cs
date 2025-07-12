@@ -1,6 +1,4 @@
-﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Application;
-
-namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
+﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
 public record UpdateProfilePreferencesCommand(
     Guid ProfileId,

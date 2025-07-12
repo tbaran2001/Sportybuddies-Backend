@@ -22,12 +22,10 @@ public abstract class Entity
         _domainEvents.Add(domainEvent);
     }
 
-    public List<IDomainEvent> PopDomainEvents()
+    public void ClearDomainEvents()
     {
         var copy = _domainEvents.ToList();
 
         _domainEvents.Clear();
-
-        return copy;
     }
 }

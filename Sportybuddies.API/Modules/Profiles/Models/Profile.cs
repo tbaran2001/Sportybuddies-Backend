@@ -1,6 +1,4 @@
-﻿using Sportybuddies.API.Modules.Profiles.Exceptions.Domain;
-
-namespace Sportybuddies.API.Modules.Profiles.Models;
+﻿namespace Sportybuddies.API.Modules.Profiles.Models;
 
 public class Profile : Entity
 {
@@ -59,6 +57,8 @@ public class Profile : Entity
             throw new ProfileAlreadyHasSportException(Id, sport.Id);
 
         Sports.Add(sport);
+
+        AddDomainEvent(new ProfileSportAddedDomainEvent(Id, sport.Id));
     }
 
     public void RemoveSport(Sport sport)
@@ -68,6 +68,8 @@ public class Profile : Entity
             throw new ProfileDoesNotHaveSportException(Id, sport.Id);
 
         Sports.Remove(sport);
+        
+        AddDomainEvent(new ProfileSportRemovedDomainEvent(Id, sport.Id));
     }
 
     public void UpdatePreferences(Preferences preferences)

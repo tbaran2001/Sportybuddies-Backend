@@ -26,4 +26,15 @@ public class ProfilesRepository(ApplicationDbContext dbContext) : IProfilesRepos
     {
         await dbContext.Profiles.AddAsync(profile, cancellationToken);
     }
+
+    public async Task<IEnumerable<Profile>> GetPotentialMatchesAsync(Guid profileId, IEnumerable<Guid> profileSports)
+    {
+        return await dbContext.Profiles
+            .Where(p => p.Id != profileId)
+            .Where(p => p.Sports.Any(s => profileSports.Contains(s.Id)))
+            .Where(p => !dbContext.Matches.Any(m =>
+                (m.ProfileId == profileId && m.MatchedProfileId == p.Id) ||
+                (m.ProfileId == p.Id && m.MatchedProfileId == profileId)))
+            .ToListAsync();
+    }
 }

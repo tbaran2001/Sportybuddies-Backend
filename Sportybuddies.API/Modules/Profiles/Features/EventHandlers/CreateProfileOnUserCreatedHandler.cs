@@ -1,6 +1,4 @@
-﻿using Sportybuddies.API.Modules.Profiles.Features.Commands;
-
-namespace Sportybuddies.API.Modules.Profiles.Features.EventHandlers;
+﻿namespace Sportybuddies.API.Modules.Profiles.Features.EventHandlers;
 
 public class CreateProfileOnUserCreatedHandler(ISender sender) : INotificationHandler<UserCreatedEvent>
 {
