@@ -61,17 +61,27 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+const string corsPolicy = "AllowFrontend";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicy, policy =>
+    {
+        policy.WithOrigins(builder.Configuration.GetSection("CorsPolicyOrigins").Get<string[]>())
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler(_ => { });
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapScalarApiReference();
-    app.MapOpenApi();
-}
+app.MapScalarApiReference();
+app.MapOpenApi();
 
 app.UseHttpsRedirection();
+app.UseCors(corsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
