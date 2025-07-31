@@ -20,6 +20,7 @@ public class AddProfileSportEndpoint : ICarterModule
                     return Results.NoContent();
                 })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("AddProfileSport")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)

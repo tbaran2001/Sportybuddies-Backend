@@ -20,6 +20,7 @@ public class RemoveProfileSportEndpoint : ICarterModule
                     return Results.NoContent();
                 })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("RemoveProfileSport")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)

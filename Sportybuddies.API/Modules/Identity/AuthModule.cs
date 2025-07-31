@@ -23,7 +23,7 @@ public class AuthModule : ICarterModule
                 var redirectUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/api/auth/google-response";
                 var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
                 return Results.Challenge(properties, ["Google"]);
-            });
+            }).WithTags("Authentication");
 
         group.MapGet("/google-response", async (
             SignInManager<ApplicationUser> signInManager,
@@ -74,7 +74,7 @@ public class AuthModule : ICarterModule
             var userRoles = await userManager.GetRolesAsync(userToCreate);
             var token = GenerateJwtToken(userToCreate, userRoles.ToList(), config);
             return Results.Ok(new { Token = token });
-        });
+        }).WithTags("Authentication");
 
         group.MapPost("/generate-and-create-test-user", async (
             TestTokenRequest request,
@@ -135,7 +135,7 @@ public class AuthModule : ICarterModule
                 UserId = user.Id,
                 Token = token
             });
-        }).WithTags("Testing");
+        }).WithTags("Authentication");
     }
 
     private static string GenerateJwtToken(ApplicationUser user, List<string> roles, IConfiguration config)

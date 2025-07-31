@@ -20,6 +20,7 @@ public class GetProfileByIdEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .WithTags("Profiles")
             .WithName("GetProfileById")
             .Produces<GetProfileByIdResponseDto>()
             .ProducesProblem(StatusCodes.Status404NotFound)

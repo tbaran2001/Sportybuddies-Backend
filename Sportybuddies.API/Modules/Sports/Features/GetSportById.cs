@@ -21,6 +21,7 @@ public class GetSportById : ICarterModule
                 return Results.Ok(response);
             })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("GetSportById")
             .Produces<GetSportByIdResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)

@@ -20,6 +20,7 @@ public class GetProfileEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .WithTags("Profiles")
             .WithName("GetProfiles")
             .Produces<GetProfilesResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)

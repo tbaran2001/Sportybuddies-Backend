@@ -19,6 +19,7 @@ public class UpdateProfileLocationEndpoint : ICarterModule
                     return Results.NoContent();
                 })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("UpdateProfileLocation")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)

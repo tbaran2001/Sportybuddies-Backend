@@ -21,6 +21,7 @@ public class GetSportsEndpoint : ICarterModule
                 return Results.Ok(response);
             })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("GetSports")
             .Produces<GetSportsResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)

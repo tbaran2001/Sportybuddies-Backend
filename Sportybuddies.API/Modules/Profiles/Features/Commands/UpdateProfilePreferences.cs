@@ -24,6 +24,7 @@ public class UpdateProfilePreferencesEndpoint : ICarterModule
                     return Results.NoContent();
                 })
             .RequireAuthorization()
+            .WithTags("Profiles")
             .WithName("UpdateProfilePreferences")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)

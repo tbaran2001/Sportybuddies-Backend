@@ -20,6 +20,7 @@ public class UpdateProfileEndpoint : ICarterModule
 
                     return Results.NoContent();
                 })
+            .WithTags("Profiles")
             .WithName("UpdateProfile")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
