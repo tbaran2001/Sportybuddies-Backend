@@ -51,6 +51,21 @@ public class Profile : Entity
         Gender = gender;
     }
 
+    public void UpdatePartial(string name, string description, DateTimeOffset? dateOfBirth, Gender? gender)
+    {
+        if (!string.IsNullOrEmpty(name))
+            Name = name;
+
+        if (!string.IsNullOrEmpty(description))
+            Description = description;
+
+        if (dateOfBirth.HasValue)
+            DateOfBirth = dateOfBirth.Value;
+
+        if (gender.HasValue)
+            Gender = gender.Value;
+    }
+
     public void AddSport(Sport sport)
     {
         if (Sports.Any(s => s.Id == sport.Id))
@@ -68,7 +83,7 @@ public class Profile : Entity
             throw new ProfileDoesNotHaveSportException(Id, sport.Id);
 
         Sports.Remove(sport);
-        
+
         AddDomainEvent(new ProfileSportRemovedDomainEvent(Id, sport.Id));
     }
 
