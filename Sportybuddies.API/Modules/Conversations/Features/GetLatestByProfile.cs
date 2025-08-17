@@ -39,12 +39,23 @@ public class GetLatestByProfileQueryValidator : AbstractValidator<GetLatestByPro
     }
 }
 
-internal class GetLatestByProfileQueryHandler(IConversationsRepository conversationsRepository)
+internal class GetLatestByProfileQueryHandler(
+    IConversationsRepository conversationsRepository,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetLatestByProfileQuery, GetLatestByProfileResult>
 {
     public async Task<GetLatestByProfileResult> Handle(GetLatestByProfileQuery query,
         CancellationToken cancellationToken)
     {
+        var profile = await profilesRepository.GetProfileByIdAsync(query.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(query.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to access conversations for this profile.");
+
         var latestConversation = await conversationsRepository.GetLatestConversationByProfileIdAsync(query.ProfileId);
 
         if (latestConversation == null)

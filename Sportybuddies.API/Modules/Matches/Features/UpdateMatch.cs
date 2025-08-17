@@ -1,4 +1,6 @@
-﻿namespace Sportybuddies.API.Modules.Matches.Features;
+﻿using Sportybuddies.API.Common.Web;
+
+namespace Sportybuddies.API.Modules.Matches.Features;
 
 public record UpdateMatchCommand(Guid MatchId, Swipe Swipe) : ICommand<UpdateMatchResult>;
 
@@ -39,7 +41,9 @@ public class UpdateMatchCommandValidator : AbstractValidator<UpdateMatchCommand>
 
 internal class UpdateMatchCommandHandler(
     IMatchesRepository matchesRepository,
-    IBuddyService buddyService)
+    IBuddyService buddyService,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : ICommandHandler<UpdateMatchCommand, UpdateMatchResult>
 {
     public async Task<UpdateMatchResult> Handle(UpdateMatchCommand command, CancellationToken cancellationToken)
@@ -47,6 +51,14 @@ internal class UpdateMatchCommandHandler(
         var match = await matchesRepository.GetMatchByIdAsync(command.MatchId);
         if (match is null)
             throw new MatchNotFoundException(command.MatchId);
+
+        var profile = await profilesRepository.GetProfileByIdAsync(match.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(match.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this match.");
 
         var oppositeMatch = await matchesRepository.GetMatchByIdAsync(match.OppositeMatchId);
         if (oppositeMatch is null)

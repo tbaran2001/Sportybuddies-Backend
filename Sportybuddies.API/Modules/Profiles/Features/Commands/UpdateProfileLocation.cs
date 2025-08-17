@@ -40,13 +40,18 @@ public class UpdateProfileLocationCommandValidator : AbstractValidator<UpdatePro
 }
 
 internal class UpdateProfileLocationCommandHandler(
-    IProfilesRepository profilesRepository) : ICommandHandler<UpdateProfileLocationCommand>
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider) : ICommandHandler<UpdateProfileLocationCommand>
 {
     public async Task<Unit> Handle(UpdateProfileLocationCommand command, CancellationToken cancellationToken)
     {
         var profile = await profilesRepository.GetProfileByIdWithSportsAsync(command.ProfileId, cancellationToken);
         if (profile == null)
             throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this profile.");
 
         var location = Location.Create(command.Latitude, command.Longitude, command.Address);
 

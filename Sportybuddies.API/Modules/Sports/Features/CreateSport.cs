@@ -22,6 +22,7 @@ public class CreateSportEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .RequireAuthorization()
             .WithTags("Profiles")
             .WithName("CreateSport")
             .Produces<CreateSportResponseDto>(StatusCodes.Status201Created)

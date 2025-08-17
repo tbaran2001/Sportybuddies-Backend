@@ -20,6 +20,7 @@ public class GetProfileByIdEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .RequireAuthorization()
             .WithTags("Profiles")
             .WithName("GetProfileById")
             .Produces<GetProfileByIdResponseDto>()
@@ -38,7 +39,8 @@ public class GetProfileByIdQueryValidator : AbstractValidator<GetProfileByIdQuer
 }
 
 internal class GetProfileByIdQueryHandler(
-    IProfilesRepository profilesRepository)
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetProfileByIdQuery, GetProfileByIdResult>
 {
     public async Task<GetProfileByIdResult> Handle(GetProfileByIdQuery query, CancellationToken cancellationToken)
@@ -46,6 +48,10 @@ internal class GetProfileByIdQueryHandler(
         var profile = await profilesRepository.GetProfileByIdWithSportsAsync(query.ProfileId, cancellationToken);
         if (profile == null)
             throw new ProfileNotFoundException(query.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to access this profile.");
 
         var profileDto = profile.Adapt<ProfileDto>();
 

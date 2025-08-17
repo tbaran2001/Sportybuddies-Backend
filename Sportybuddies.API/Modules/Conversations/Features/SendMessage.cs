@@ -42,7 +42,9 @@ public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
 }
 
 internal class SendMessageCommandHandler(
-    IConversationsRepository conversationsRepository)
+    IConversationsRepository conversationsRepository,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : ICommandHandler<SendMessageCommand, SendMessageResult>
 {
     public async Task<SendMessageResult> Handle(SendMessageCommand command, CancellationToken cancellationToken)
@@ -50,6 +52,17 @@ internal class SendMessageCommandHandler(
         var conversation = await conversationsRepository.GetConversationByIdAsync(command.ConversationId);
         if (conversation is null)
             throw new ConversationNotFoundException(command.ConversationId);
+
+        if (conversation.Participants.All(p => p.ProfileId != command.ProfileId))
+            throw new ForbiddenException("You are not a participant of this conversation.");
+
+        var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to send messages as this profile.");
 
         var message = Message.Create(conversation.Id, command.ProfileId, command.Content);
 

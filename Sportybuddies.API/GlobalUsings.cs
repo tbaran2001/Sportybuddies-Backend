@@ -41,3 +41,4 @@ global using Sportybuddies.API.Modules.Sports.Dtos;
 global using Sportybuddies.API.Modules.Sports.Exceptions;
 global using Sportybuddies.API.Modules.Sports.Models;
 global using Sportybuddies.API.Services;
+global using Sportybuddies.API.Common.Web;

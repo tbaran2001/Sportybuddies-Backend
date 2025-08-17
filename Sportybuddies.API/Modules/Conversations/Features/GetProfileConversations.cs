@@ -40,12 +40,23 @@ public class GetProfileConversationsQueryValidator : AbstractValidator<GetProfil
     }
 }
 
-internal class GetProfileConversationsQueryHandler(IConversationsRepository conversationsRepository)
+internal class GetProfileConversationsQueryHandler(
+    IConversationsRepository conversationsRepository,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetProfileConversationsQuery, GetProfileConversationsResult>
 {
     public async Task<GetProfileConversationsResult> Handle(GetProfileConversationsQuery query,
         CancellationToken cancellationToken)
     {
+        var profile = await profilesRepository.GetProfileByIdAsync(query.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(query.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to access conversations for this profile.");
+
         var conversations = await conversationsRepository.GetConversationsByProfileIdAsync(query.ProfileId);
 
         var conversationDtos = conversations.Adapt<IEnumerable<ConversationDto>>();

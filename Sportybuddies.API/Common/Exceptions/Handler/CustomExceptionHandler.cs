@@ -30,6 +30,7 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger) : IE
                 StatusCodes.Status400BadRequest),
             NotFoundException ex => (ex.Message, "Not Found", StatusCodes.Status404NotFound),
             ConflictException ex => (ex.Message, "Conflict", StatusCodes.Status409Conflict),
+            ForbiddenException ex => (ex.Message, "Forbidden", StatusCodes.Status403Forbidden),
             _ => ("An unexpected internal server error has occurred.", "Internal Server Error",
                 StatusCodes.Status500InternalServerError)
         };

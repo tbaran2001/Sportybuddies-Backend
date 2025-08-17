@@ -31,11 +31,21 @@ public class GetProfileMatchesEndpoint : ICarterModule
 }
 
 internal class GetProfileMatchesQueryHandler(
-    IMatchesRepository matchesRepository)
+    IMatchesRepository matchesRepository,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetProfileMatchesQuery, GetProfileMatchesResult>
 {
     public async Task<GetProfileMatchesResult> Handle(GetProfileMatchesQuery query, CancellationToken cancellationToken)
     {
+        var profile = await profilesRepository.GetProfileByIdAsync(query.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(query.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to access matches for this profile.");
+
         var matches = await matchesRepository.GetProfileMatchesAsync(query.ProfileId);
         if (matches is null)
             throw new MatchesNotFoundException(query.ProfileId);

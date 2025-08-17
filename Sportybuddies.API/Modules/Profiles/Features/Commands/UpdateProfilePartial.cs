@@ -1,8 +1,17 @@
 ﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
-public record UpdateProfilePartialRequestDto(string Name, string Description, DateTimeOffset? DateOfBirth, Gender? Gender);
+public record UpdateProfilePartialRequestDto(
+    string Name,
+    string Description,
+    DateTimeOffset? DateOfBirth,
+    Gender? Gender);
 
-public record UpdateProfilePartialCommand(Guid ProfileId, string Name, string Description, Gender? Gender, DateTimeOffset? DateOfBirth) : ICommand<UpdateProfileResult>;
+public record UpdateProfilePartialCommand(
+    Guid ProfileId,
+    string Name,
+    string Description,
+    Gender? Gender,
+    DateTimeOffset? DateOfBirth) : ICommand<UpdateProfileResult>;
 
 public class UpdateProfilePartialEndpoint : ICarterModule
 {
@@ -11,10 +20,12 @@ public class UpdateProfilePartialEndpoint : ICarterModule
         app.MapPatch("api/profiles/{profileId:guid}",
                 async (Guid profileId, UpdateProfilePartialRequestDto request, ISender sender) =>
                 {
-                    var command = new UpdateProfilePartialCommand(profileId, request.Name, request.Description, request.Gender, request.DateOfBirth);
+                    var command = new UpdateProfilePartialCommand(profileId, request.Name, request.Description,
+                        request.Gender, request.DateOfBirth);
                     await sender.Send(command);
                     return Results.NoContent();
                 })
+            .RequireAuthorization()
             .WithTags("Profiles")
             .WithName("UpdateProfilePartial")
             .Produces(StatusCodes.Status204NoContent)
@@ -44,14 +55,20 @@ public class UpdateProfilePartialCommandValidator : AbstractValidator<UpdateProf
 }
 
 internal class UpdateProfilePartialCommandHandler(
-    IProfilesRepository profilesRepository)
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : ICommandHandler<UpdateProfilePartialCommand, UpdateProfileResult>
 {
-    public async Task<UpdateProfileResult> Handle(UpdateProfilePartialCommand command, CancellationToken cancellationToken)
+    public async Task<UpdateProfileResult> Handle(UpdateProfilePartialCommand command,
+        CancellationToken cancellationToken)
     {
         var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
         if (profile is null)
             throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this profile.");
 
         profile.UpdatePartial(command.Name, command.Description, command.DateOfBirth, command.Gender);
 

@@ -51,13 +51,18 @@ public class UpdateProfilePreferencesCommandValidator : AbstractValidator<Update
 }
 
 internal class UpdateProfilePreferencesCommandHandler(
-    IProfilesRepository profilesRepository) : ICommandHandler<UpdateProfilePreferencesCommand>
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider) : ICommandHandler<UpdateProfilePreferencesCommand>
 {
     public async Task<Unit> Handle(UpdateProfilePreferencesCommand command, CancellationToken cancellationToken)
     {
         var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
         if (profile == null)
             throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this profile.");
 
         profile.UpdatePreferences(Preferences.Create(command.MinAge, command.MaxAge, command.MaxDistance,
             command.PreferredGender));

@@ -42,12 +42,22 @@ public class CreateConversationCommandValidator : AbstractValidator<CreateConver
 }
 
 internal class CreateConversationCommandHandler(
-    IConversationService conversationService)
+    IConversationService conversationService,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : ICommandHandler<CreateConversationCommand, CreateConversationResult>
 {
     public async Task<CreateConversationResult> Handle(CreateConversationCommand command,
         CancellationToken cancellationToken)
     {
+        var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to create conversations for this profile.");
+
         var conversation = await conversationService.CreateConversationAsync(command.ProfileId, command.ParticipantId);
 
         var conversationDto = conversation.Adapt<ConversationDto>();

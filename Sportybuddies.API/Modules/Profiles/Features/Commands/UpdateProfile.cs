@@ -1,6 +1,11 @@
 ﻿namespace Sportybuddies.API.Modules.Profiles.Features.Commands;
 
-public record UpdateProfileCommand(Guid ProfileId, string Name, string Description, Gender Gender, DateTimeOffset DateOfBirth)
+public record UpdateProfileCommand(
+    Guid ProfileId,
+    string Name,
+    string Description,
+    Gender Gender,
+    DateTimeOffset DateOfBirth)
     : ICommand<UpdateProfileResult>;
 
 public record UpdateProfileResult(Guid Id);
@@ -20,6 +25,7 @@ public class UpdateProfileEndpoint : ICarterModule
 
                     return Results.NoContent();
                 })
+            .RequireAuthorization()
             .WithTags("Profiles")
             .WithName("UpdateProfile")
             .Produces(StatusCodes.Status204NoContent)
@@ -47,7 +53,8 @@ public class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileComm
 }
 
 internal class UpdateProfileCommandHandler(
-    IProfilesRepository profilesRepository)
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : ICommandHandler<UpdateProfileCommand, UpdateProfileResult>
 {
     public async Task<UpdateProfileResult> Handle(UpdateProfileCommand command, CancellationToken cancellationToken)
@@ -55,6 +62,10 @@ internal class UpdateProfileCommandHandler(
         var profile = await profilesRepository.GetProfileByIdAsync(command.ProfileId, cancellationToken);
         if (profile is null)
             throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this profile.");
 
         profile.Update(command.Name, command.Description, command.DateOfBirth, command.Gender);
 

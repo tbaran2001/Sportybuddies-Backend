@@ -40,13 +40,18 @@ public class RemoveProfileSportCommandValidator : AbstractValidator<RemoveProfil
 
 internal class RemoveProfileSportCommandHandler(
     IProfilesRepository profilesRepository,
-    ISportsRepository sportsRepository) : ICommandHandler<RemoveProfileSportCommand>
+    ISportsRepository sportsRepository,
+    ICurrentUserProvider currentUserProvider) : ICommandHandler<RemoveProfileSportCommand>
 {
     public async Task<Unit> Handle(RemoveProfileSportCommand command, CancellationToken cancellationToken)
     {
         var profile = await profilesRepository.GetProfileByIdWithSportsAsync(command.ProfileId, cancellationToken);
         if (profile == null)
             throw new ProfileNotFoundException(command.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to modify this profile.");
 
         var sport = await sportsRepository.GetSportByIdAsync(command.SportId, cancellationToken);
         if (sport == null)

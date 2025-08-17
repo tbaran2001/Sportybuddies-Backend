@@ -20,6 +20,7 @@ public class GetProfileEndpoint : ICarterModule
 
                 return Results.Ok(response);
             })
+            .RequireAuthorization()
             .WithTags("Profiles")
             .WithName("GetProfiles")
             .Produces<GetProfilesResponseDto>()
@@ -29,14 +30,18 @@ public class GetProfileEndpoint : ICarterModule
     }
 }
 
-internal class GetProfilesQueryHandler(IProfilesRepository profilesRepository)
+internal class GetProfilesQueryHandler(IProfilesRepository profilesRepository, ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetProfilesQuery, GetProfilesResult>
 {
     public async Task<GetProfilesResult> Handle(GetProfilesQuery query, CancellationToken cancellationToken)
     {
-        var profiles = await profilesRepository.GetAllProfilesWthSportsAsync(cancellationToken);
+        var currentUserId = currentUserProvider.GetCurrentUserId();
 
-        var profileDtos = profiles.Adapt<IEnumerable<ProfileDto>>();
+        var profile = await profilesRepository.GetProfileByUserIdWithSportsAsync(currentUserId, cancellationToken);
+
+        var profileDtos = profile is null
+            ? Enumerable.Empty<ProfileDto>()
+            : new[] { profile.Adapt<ProfileDto>() };
 
         return new GetProfilesResult(profileDtos);
     }

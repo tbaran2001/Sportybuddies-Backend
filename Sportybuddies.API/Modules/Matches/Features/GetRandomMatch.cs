@@ -31,11 +31,21 @@ public class GetRandomMatchEndpoint : ICarterModule
 }
 
 internal class GetRandomMatchQueryHandler(
-    IMatchService matchService)
+    IMatchService matchService,
+    IProfilesRepository profilesRepository,
+    ICurrentUserProvider currentUserProvider)
     : IQueryHandler<GetRandomMatchQuery, GetRandomMatchResult>
 {
     public async Task<GetRandomMatchResult> Handle(GetRandomMatchQuery query, CancellationToken cancellationToken)
     {
+        var profile = await profilesRepository.GetProfileByIdAsync(query.ProfileId, cancellationToken);
+        if (profile is null)
+            throw new ProfileNotFoundException(query.ProfileId);
+
+        var currentUserId = currentUserProvider.GetCurrentUserId();
+        if (profile.UserId != currentUserId)
+            throw new ForbiddenException("You are not allowed to access matches for this profile.");
+
         var matchDto = await matchService.GetRandomMatchAsync(query.ProfileId);
 
         return new GetRandomMatchResult(matchDto);

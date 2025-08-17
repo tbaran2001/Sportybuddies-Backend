@@ -25,7 +25,7 @@ public class Profile : Entity
             UserId = userId,
             CreatedOn = DateTimeOffset.UtcNow,
             Preferences = Preferences.Default,
-            Location = Location.Create(1.0, 1.0, "Default"),
+            Location = Location.Create(	51.107883, 	17.038538, "Wroclaw"),
             Description = null,
             MainPhotoUrl = null,
         };
