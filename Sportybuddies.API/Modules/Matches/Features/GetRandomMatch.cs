@@ -37,8 +37,6 @@ internal class GetRandomMatchQueryHandler(
     public async Task<GetRandomMatchResult> Handle(GetRandomMatchQuery query, CancellationToken cancellationToken)
     {
         var matchDto = await matchService.GetRandomMatchAsync(query.ProfileId);
-        if (matchDto is null)
-            throw new RandomMatchNotFoundException();
 
         return new GetRandomMatchResult(matchDto);
     }

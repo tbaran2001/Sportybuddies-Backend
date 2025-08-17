@@ -7,7 +7,7 @@ public class CreateProfileOnUserCreatedHandler(ISender sender) : INotificationHa
         var command = new CreateProfileCommand(
             Guid.NewGuid(),
             notification.Email,
-            DateTimeOffset.Now - TimeSpan.FromDays(365 * 18),
+            DateTimeOffset.Now - TimeSpan.FromDays(365 * 20),
             Gender.Male,
             notification.UserId);
         await sender.Send(command, cancellationToken);

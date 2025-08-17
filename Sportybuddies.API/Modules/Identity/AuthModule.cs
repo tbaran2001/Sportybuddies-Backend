@@ -84,19 +84,20 @@ public class AuthModule : ICarterModule
             RoleManager<IdentityRole<Guid>> roleManager,
             IMediator mediator) =>
         {
-            if (!env.IsDevelopment())
+            /*if (!env.IsDevelopment())
             {
                 return Results.NotFound();
-            }
+            }*/
 
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
+                var userName = request.Email.Split('@')[0];
                 user = new ApplicationUser
                 {
                     Id = request.UserId,
                     Email = request.Email,
-                    UserName = request.UserName,
+                    UserName = userName,
                     EmailConfirmed = true
                 };
 

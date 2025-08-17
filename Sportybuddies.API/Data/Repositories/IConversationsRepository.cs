@@ -8,4 +8,6 @@ public interface IConversationsRepository
     Task<Conversation> GetConversationByIdWithMessagesAsync(Guid conversationId);
     Task<IEnumerable<Message>> GetLastMessageFromEachProfileConversationAsync(Guid profileId);
     Task<bool> ProfilesHaveConversationAsync(Guid firstProfileId, Guid secondProfileId);
+    Task<IEnumerable<Conversation>> GetConversationsByProfileIdAsync(Guid profileId);
+    Task<Conversation> GetLatestConversationByProfileIdAsync(Guid profileId);
 }

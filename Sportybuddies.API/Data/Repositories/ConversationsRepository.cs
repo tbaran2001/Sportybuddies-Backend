@@ -23,7 +23,7 @@ public class ConversationsRepository(ApplicationDbContext dbContext) : IConversa
     public async Task<Conversation> GetConversationByIdWithMessagesAsync(Guid conversationId)
     {
         return await dbContext.Conversations
-            .Include(c => c.Messages)
+            .Include(c => c.Messages.OrderBy(m => m.CreatedOn))
             .FirstOrDefaultAsync(c => c.Id == conversationId);
     }
 
@@ -43,5 +43,28 @@ public class ConversationsRepository(ApplicationDbContext dbContext) : IConversa
             .Where(c => c.Participants.Any(p => p.ProfileId == firstUserId))
             .Where(c => c.Participants.Any(p => p.ProfileId == secondUserId))
             .AnyAsync();
+    }
+
+    public async Task<IEnumerable<Conversation>> GetConversationsByProfileIdAsync(Guid profileId)
+    {
+        return await dbContext.Conversations
+            .Include(c => c.Participants)
+            .ThenInclude(p => p.Profile)
+            .Where(c => c.Participants.Any(p => p.ProfileId == profileId))
+            .OrderByDescending(c => c.CreatedOnUtc)
+            .ToListAsync();
+    }
+
+    public async Task<Conversation> GetLatestConversationByProfileIdAsync(Guid profileId)
+    {
+        return await dbContext.Conversations
+            .Include(c => c.Participants)
+            .ThenInclude(p => p.Profile)
+            .Include(c => c.Messages)
+            .Where(c => c.Participants.Any(p => p.ProfileId == profileId))
+            .OrderByDescending(c => c.Messages.Any()
+                ? c.Messages.Max(m => m.CreatedOn)
+                : c.CreatedOnUtc)
+            .FirstOrDefaultAsync();
     }
 }
