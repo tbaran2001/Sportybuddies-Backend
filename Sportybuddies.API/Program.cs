@@ -2,7 +2,8 @@ using Sportybuddies.API.Common.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
 builder.Services.AddMediatR(configuration =>
 {
@@ -78,8 +79,8 @@ var app = builder.Build();
 
 app.UseExceptionHandler(_ => { });
 
-app.MapScalarApiReference();
-app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors(corsPolicy);
