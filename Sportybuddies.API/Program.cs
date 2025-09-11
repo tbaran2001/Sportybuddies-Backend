@@ -1,4 +1,7 @@
 using Sportybuddies.API.Common.Web;
+using Sportybuddies.API.Common.Patterns;
+using Sportybuddies.API.Services.Domain;
+using Sportybuddies.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,7 @@ builder.Services.AddMediatR(configuration =>
 {
     configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+    configuration.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
     configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
     configuration.AddOpenBehavior(typeof(DomainEventsBehavior<,>));
     configuration.AddOpenBehavior(typeof(TransactionBehavior<,>));
@@ -30,6 +34,18 @@ builder.Services.AddScoped<IConversationsRepository, ConversationsRepository>();
 builder.Services.AddScoped<IBuddyService, BuddyService>();
 builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
+
+// Add new domain services and pattern implementations
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IMatchFilteringDomainService, MatchFilteringDomainService>();
+builder.Services.AddScoped<IEnhancedMatchService, EnhancedMatchService>();
+builder.Services.AddScoped<IMatchFactory, MatchFactory>();
+builder.Services.AddScoped<IMatchFilterStrategy>(provider => 
+    new CompositeMatchFilterStrategy(
+        new AgeFilterStrategy(),
+        new GenderFilterStrategy(),
+        new DistanceFilterStrategy()
+    ));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
