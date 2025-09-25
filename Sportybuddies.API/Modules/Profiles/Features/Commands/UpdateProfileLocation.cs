@@ -53,7 +53,7 @@ internal class UpdateProfileLocationCommandHandler(
         if (profile.UserId != currentUserId)
             throw new ForbiddenException("You are not allowed to modify this profile.");
 
-        var location = Location.Create(command.Latitude, command.Longitude, command.Address);
+        var location = ValueObjects.Location.Create(command.Latitude, command.Longitude, command.Address);
 
         profile.UpdateLocation(location);
 

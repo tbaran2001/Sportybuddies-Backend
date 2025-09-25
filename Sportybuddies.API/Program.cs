@@ -35,18 +35,25 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 
-builder.Services.AddAuthentication(options =>
+var authBuilder = builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+});
+
+// Add Google auth only if credentials are provided
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddGoogle(options =>
-    {
-        IConfigurationSection googleAuth = builder.Configuration.GetSection("Authentication:Google");
-        options.ClientId = googleAuth["ClientId"];
-        options.ClientSecret = googleAuth["ClientSecret"];
-    })
-    .AddJwtBearer(options =>
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+    });
+}
+
+authBuilder.AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -61,6 +68,12 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+
+// GraphQL Configuration
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<Sportybuddies.API.GraphQL.Query>()
+    .AddAuthorization();
 
 const string corsPolicy = "AllowFrontend";
 builder.Services.AddCors(options =>
@@ -86,6 +99,7 @@ app.UseCors(corsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGraphQL("/graphql");
 app.MapCarter();
 
 app.Run();
