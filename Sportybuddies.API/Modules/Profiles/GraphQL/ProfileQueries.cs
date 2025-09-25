@@ -2,6 +2,7 @@
 using HotChocolate;
 using HotChocolate.Authorization;
 using HotChocolate.Data;
+using HotChocolate.Types;
 using Sportybuddies.API.Modules.Profiles.Features.Queries;
 
 namespace Sportybuddies.API.Modules.Profiles.GraphQL;
@@ -9,7 +10,7 @@ namespace Sportybuddies.API.Modules.Profiles.GraphQL;
 /// <summary>
 /// GraphQL queries for the Profiles module
 /// </summary>
-[Authorize]
+[ExtendObjectType(typeof(TestQueries))]
 public class ProfileQueries
 {
     /// <summary>
@@ -18,9 +19,7 @@ public class ProfileQueries
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of profiles</returns>
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
+    [Authorize]
     public async Task<IEnumerable<ProfileDto>> GetProfiles(
         [Service] ISender sender,
         CancellationToken cancellationToken = default)
@@ -37,6 +36,7 @@ public class ProfileQueries
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> GetProfile(
         Guid profileId,
         [Service] ISender sender,
@@ -60,6 +60,7 @@ public class ProfileQueries
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The current user's profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> GetCurrentProfile(
         [Service] ISender sender,
         CancellationToken cancellationToken = default)

@@ -41,7 +41,6 @@ public record UpdateProfileLocationInput(
 /// <summary>
 /// GraphQL mutations for the Profiles module
 /// </summary>
-[Authorize]
 public class ProfileMutations
 {
     /// <summary>
@@ -51,6 +50,7 @@ public class ProfileMutations
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> UpdateProfile(
         UpdateProfileInput input,
         [Service] ISender sender,
@@ -78,6 +78,7 @@ public class ProfileMutations
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> AddProfileSport(
         AddProfileSportInput input,
         [Service] ISender sender,
@@ -99,6 +100,7 @@ public class ProfileMutations
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> RemoveProfileSport(
         RemoveProfileSportInput input,
         [Service] ISender sender,
@@ -120,6 +122,7 @@ public class ProfileMutations
     /// <param name="sender">MediatR sender</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated profile</returns>
+    [Authorize]
     public async Task<ProfileDto?> UpdateProfileLocation(
         UpdateProfileLocationInput input,
         [Service] ISender sender,

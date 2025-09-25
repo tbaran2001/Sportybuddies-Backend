@@ -1,6 +1,5 @@
 using Sportybuddies.API.Common.Web;
 using Sportybuddies.API.Modules.Profiles.GraphQL;
-using HotChocolate;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,27 +66,19 @@ builder.Services.AddAuthorization();
 // GraphQL configuration
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType(d => d.Name("Query"))
-    .AddMutationType(d => d.Name("Mutation"))
-    .AddSubscriptionType(d => d.Name("Subscription"))
+    .AddQueryType<TestQueries>()
     .AddTypeExtension<ProfileQueries>()
-    .AddTypeExtension<ProfileMutations>()
-    .AddTypeExtension<ProfileSubscriptions>()
+    .AddMutationType<ProfileMutations>()
     .AddType<ProfileType>()
     .AddType<GenderType>()
     .AddType<PreferencesType>()
     .AddType<LocationType>()
     .AddType<SportType>()
-    .AddType<ProfileSportEventType>()
-    .AddFiltering()
-    .AddSorting()
-    .AddProjections()
-    .AddAuthorization()
-    .AddInMemorySubscriptions();
+    .AddAuthorization();
 
-// Register GraphQL event handlers
-builder.Services.AddScoped<ProfileSportDomainEventHandler>();
-builder.Services.AddScoped<ProfileUpdatedEventHandler>();
+// Register GraphQL event handlers - commenting out for now to test basic functionality
+// builder.Services.AddScoped<ProfileSportDomainEventHandler>();
+// builder.Services.AddScoped<ProfileUpdatedEventHandler>();
 
 const string corsPolicy = "AllowFrontend";
 builder.Services.AddCors(options =>

@@ -1,11 +1,13 @@
-#nullable enable
-using HotChocolate.Subscriptions;
+//#nullable enable
+//using HotChocolate.Subscriptions;
 
-namespace Sportybuddies.API.Modules.Profiles.GraphQL;
+//namespace Sportybuddies.API.Modules.Profiles.GraphQL;
 
 /// <summary>
 /// Event handler to publish GraphQL subscription events for profile sport operations
 /// </summary>
+/// Note: Temporarily commented out to get basic GraphQL working
+/*
 internal class ProfileSportDomainEventHandler(ITopicEventSender eventSender)
     : INotificationHandler<ProfileSportAddedDomainEvent>, INotificationHandler<ProfileSportRemovedDomainEvent>
 {
@@ -60,3 +62,4 @@ internal class ProfileUpdatedEventHandler(
         }
     }
 }
+*/
