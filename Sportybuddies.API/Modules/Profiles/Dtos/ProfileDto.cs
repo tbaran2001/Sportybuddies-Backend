@@ -9,5 +9,5 @@ public record ProfileDto(
     Gender Gender,
     DateTimeOffset DateOfBirth,
     Preferences Preferences,
-    Location Location,
+    ValueObjects.Location Location,
     List<SportDto> Sports);

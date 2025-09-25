@@ -9,7 +9,7 @@ public class Profile : Entity
     public DateTimeOffset DateOfBirth { get; private set; }
     public Gender Gender { get; private set; }
     public Preferences Preferences { get; private set; }
-    public Location Location { get; private set; }
+    public ValueObjects.Location Location { get; private set; }
     public ICollection<Sport> Sports { get; private set; } = new List<Sport>();
     public Guid UserId { get; set; }
     public virtual ApplicationUser User { get; set; }
@@ -25,7 +25,7 @@ public class Profile : Entity
             UserId = userId,
             CreatedOn = DateTimeOffset.UtcNow,
             Preferences = Preferences.Default,
-            Location = Location.Create(	51.107883, 	17.038538, "Wroclaw"),
+            Location = ValueObjects.Location.Create(	51.107883, 	17.038538, "Wroclaw"),
             Description = null,
             MainPhotoUrl = null,
         };
@@ -92,7 +92,7 @@ public class Profile : Entity
         Preferences = preferences;
     }
 
-    public void UpdateLocation(Location location)
+    public void UpdateLocation(ValueObjects.Location location)
     {
         Location = location;
     }
