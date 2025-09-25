@@ -6,6 +6,11 @@ namespace Sportybuddies.API.GraphQL;
 public class Query
 {
     /// <summary>
+    /// Test GraphQL endpoint - returns a simple greeting
+    /// </summary>
+    public string Hello => "Hello from GraphQL! SportyBuddies API is running with GraphQL support.";
+
+    /// <summary>
     /// Gets the current user's profile
     /// </summary>
     [Authorize]
