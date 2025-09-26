@@ -1,4 +1,62 @@
-﻿namespace Sportybuddies.API.Modules.Profiles.Models;
+﻿using Bogus;
+
+namespace Sportybuddies.API.Modules.Profiles.Models;
+
+class City
+{
+    public double latitude { get; set; }
+    public double longitude { get; set; }
+    public string address { get; set; }
+}
+
+static class PolishCitiesGenerator
+{
+    public static List<City> PolishCities =
+    [
+        new()
+        {
+            latitude = 51.107883,
+            longitude = 17.038538,
+            address = "Wroclaw"
+        },
+        new()
+        {
+            address = "Krakow",
+            latitude = 50.064739,
+            longitude = 19.945020,
+        },
+        new()
+        {
+            address = "Warsaw",
+            latitude = 52.229676,
+            longitude = 21.012229,
+        },
+        new()
+        {
+            address = "Poznan",
+            latitude = 52.406374,
+            longitude = 16.925168,
+        },
+        new()
+        {
+            address = "Katowice",
+            latitude = 50.263159,
+            longitude = 19.015513,
+        },
+        new()
+        {
+            address = "Gdansk",
+            latitude = 54.351007,
+            longitude = 18.645198,
+        }
+    ];
+
+    public static Location RandomLocation()
+    {
+        var randomCity = PolishCities[new Random().Next(0, PolishCities.Count)];
+        return Location.Create(randomCity.latitude, randomCity.longitude, randomCity.address);
+    }
+}
 
 public class Profile : Entity
 {
@@ -25,7 +83,7 @@ public class Profile : Entity
             UserId = userId,
             CreatedOn = DateTimeOffset.UtcNow,
             Preferences = Preferences.Default,
-            Location = Location.Create(	51.107883, 	17.038538, "Wroclaw"),
+            Location = PolishCitiesGenerator.RandomLocation(),
             Description = null,
             MainPhotoUrl = null,
         };

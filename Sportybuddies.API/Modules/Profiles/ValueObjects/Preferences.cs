@@ -7,7 +7,7 @@ public record Preferences
     public int MaxDistance { get; }
     public Gender PreferredGender { get; }
 
-    public static Preferences Default => new Preferences(18, 45, 50, Gender.Unknown);
+    public static Preferences Default => new (18,120,1000,Gender.Unknown);
 
     private Preferences(int minAge, int maxAge, int maxDistance, Gender preferredGender)
     {
@@ -25,8 +25,8 @@ public record Preferences
         if (minAge > maxAge)
             throw new ArgumentException("Min age cannot be greater than max age");
 
-        if (maxDistance is < 1 or > 100)
-            throw new ArgumentException("Max distance must be in range from 1 to 100");
+        if (maxDistance is < 1 or > 1000)
+            throw new ArgumentException("Max distance must be in range from 1 to 1000");
 
         return new Preferences(minAge, maxAge, maxDistance, gender);
     }

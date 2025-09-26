@@ -18,7 +18,8 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
+    // Switched to EF Core InMemory provider
+    options.UseInMemoryDatabase("SportybuddiesDb");
 });
 builder.Services.AddScoped<ISportsRepository, SportsRepository>();
 builder.Services.AddScoped<IProfilesRepository, ProfilesRepository>();
@@ -77,6 +78,13 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseExceptionHandler(_ => { });
+
+// Ensure the in-memory database is created and seeded (via model seed data)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+}
 
 app.MapScalarApiReference();
 app.MapOpenApi();
